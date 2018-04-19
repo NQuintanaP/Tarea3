@@ -45,6 +45,11 @@ nat max(int i, int j){
     return i;
 }
 
+// /* Devuelve True si el elemento es la raiz */
+// bool es_raiz(info_t i, info_t iB){
+//   return son_iguales(i,iB);
+// }
+
 
 /* Constructoras */
 
@@ -104,12 +109,40 @@ info_t remover_mayor(binario_t &b) {
   Libera la memoria del nodo y del elemento.
  */
 bool remover_de_binario(const char *t, binario_t &b){
-  bool removido = false;
-
+  if (es_vacio_binario(b))
+    return false;
+  else {
+    if (orden_elemento(t,b) == 0){
+      if (es_vacio_binario(b->izq) && es_vacio_binario(b->der)){
+        delete b;
+        return true;
+      } else if (!es_vacio_binario(b->der) && es_vacio_binario(b->izq)) {
+        binario_t auxBin = b;
+        b = b->der;
+        delete auxBin;
+        return true;
+      } else {
+        b->dato = remover_mayor(b->izq);
+        return true;
+      }
+    } else if(orden_elemento(t,b) < 1)
+      return remover_de_binario(t,b->izq);
+    else
+      return remover_de_binario(t,b->der);
+  }
 }
 
+
 /* Libera la memoria asociada a `b' y todos sus elementos. */
-void liberar_binario(binario_t &b);
+void liberar_binario(binario_t &b){
+  if (!es_vacio_binario(b)) {
+    if (!es_vacio_binario(b->izq)){
+      liberar_binario(b->izq);
+      liberar_binario(b->der);
+      remover_de_binario(frase_info(b->dato),b);
+    }
+  }
+}
 
 /* Predicados */
 
