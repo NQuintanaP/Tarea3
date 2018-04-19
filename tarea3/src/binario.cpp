@@ -37,7 +37,17 @@ binario_t crear_binario() { return NULL; }
  */
 bool insertar_en_binario(info_t i, binario_t &b) {
   if (es_vacio_binario(b)) {
-    b = crear_binario()
+    b->dato = i;
+    b->izq = NULL;
+    b->der = NULL;
+    return true;
+  } else {
+    if (strcmp(frase_info(b->dato),frase_info(i)) < 0)
+      return insertar_en_binario(i,b->izq);
+    else if (strcmp(frase_info(b->dato),frase_info(i)) > 0)
+      return insertar_en_binario(i,b->der);
+    else
+      return false;
   }
 }
 
@@ -77,6 +87,13 @@ bool remover_de_binario(const char *t, binario_t &b);
 void liberar_binario(binario_t &b);
 
 /* Predicados */
+
+nat max(int i, int j){
+  if (i<=j)
+    return j;
+  else
+    return i;
+}
 
 /* Devuelve `true' si y sólo si `b' es vacío (no tiene elementos). */
 bool es_vacio_binario(binario_t b) {
@@ -133,7 +150,7 @@ nat altura_binario(binario_t b) {
   if (es_vacio_binario(b))
     return 0;
   else
-    return 1 + max(altura_binario(izquiero(b)),altura_binario(derecho(b)));
+    return 1 + max(altura_binario(izquierdo(b)),altura_binario(derecho(b)));
 }
 
 /*  Devuelve la cantidad de elementos de `b'. */
