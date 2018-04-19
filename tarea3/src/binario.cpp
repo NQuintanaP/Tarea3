@@ -24,6 +24,16 @@ struct rep_binario {
   rep_binario *der;
 };
 
+/*
+  Devuelve 1 si la frase de i es menor que la del info_t de nodo
+  Devuelve 0 si son iguales
+  Devuelve -1 si es menor
+  Precondición: !es_vacio_binario
+*/
+int orden_elemento(info_t i, binario_t b){
+  return strcmp(frase_info(b->dato),frase_info(i));
+}
+
 /* Constructoras */
 
 /*  Devuelve un binario_t vacío (sin elementos). */
@@ -42,9 +52,9 @@ bool insertar_en_binario(info_t i, binario_t &b) {
     b->der = NULL;
     return true;
   } else {
-    if (strcmp(frase_info(b->dato),frase_info(i)) < 0)
+    if (orden_elemento(i,b) < 0)
       return insertar_en_binario(i,b->izq);
-    else if (strcmp(frase_info(b->dato),frase_info(i)) > 0)
+    else if (orden_elemento(i,b) > 0)
       return insertar_en_binario(i,b->der);
     else
       return false;
