@@ -24,15 +24,27 @@ struct rep_binario {
   rep_binario *der;
 };
 
+
+/*
+  Auxiliares
+*/
 /*
   Devuelve 1 si la frase de i es menor que la del info_t de nodo
   Devuelve 0 si son iguales
   Devuelve -1 si es menor
   Precondición: !es_vacio_binario
 */
-int orden_elemento(info_t i, binario_t b){
-  return strcmp(frase_info(b->dato),frase_info(i));
+int orden_elemento(const char *f, binario_t b){
+  return strcmp(frase_info(b->dato),f);
 }
+/* Devuelve el maximo de dos integers */
+nat max(int i, int j){
+  if (i<=j)
+    return j;
+  else
+    return i;
+}
+
 
 /* Constructoras */
 
@@ -52,9 +64,9 @@ bool insertar_en_binario(info_t i, binario_t &b) {
     b->der = NULL;
     return true;
   } else {
-    if (orden_elemento(i,b) < 0)
+    if (orden_elemento(frase_info(i),b) < 0)
       return insertar_en_binario(i,b->izq);
-    else if (orden_elemento(i,b) > 0)
+    else if (orden_elemento(frase_info(i),b) > 0)
       return insertar_en_binario(i,b->der);
     else
       return false;
@@ -91,19 +103,15 @@ info_t remover_mayor(binario_t &b) {
   definida) en el subárbol izquierdo.
   Libera la memoria del nodo y del elemento.
  */
-bool remover_de_binario(const char *t, binario_t &b);
+bool remover_de_binario(const char *t, binario_t &b){
+  bool removido = false;
+
+}
 
 /* Libera la memoria asociada a `b' y todos sus elementos. */
 void liberar_binario(binario_t &b);
 
 /* Predicados */
-
-nat max(int i, int j){
-  if (i<=j)
-    return j;
-  else
-    return i;
-}
 
 /* Devuelve `true' si y sólo si `b' es vacío (no tiene elementos). */
 bool es_vacio_binario(binario_t b) {
