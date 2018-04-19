@@ -1,0 +1,40 @@
+1>#  es_vacio_binario, insertar_en_binario, imprimir_binario.
+2>Vacio.
+3>
+4>Insertado.
+5>No vacío.
+6>
+(3,k)
+7>No insertado.
+8>
+(3,k)
+9>Insertado.
+10>Insertado.
+11>Insertado.
+12>Insertado.
+13>Insertado.
+14>
+--(7,z)
+-(1,n)
+---(3,m)
+--(4,l)
+(3,k)
+-(2,a)
+15>No insertado.
+16>
+--(7,z)
+-(1,n)
+---(3,m)
+--(4,l)
+(3,k)
+-(2,a)
+17>Insertado.
+18>
+--(7,z)
+-(1,n)
+---(3,m)
+--(4,l)
+(3,k)
+--(6,b)
+-(2,a)
+19>Fin.

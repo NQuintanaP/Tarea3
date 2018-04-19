@@ -1,0 +1,38 @@
+1>#  es_AVL.
+2>
+3>AVL.
+4>Insertado.
+5>
+(3,k)
+6>AVL.
+7>Insertado.
+8>
+-(1,n)
+(3,k)
+9>AVL.
+10>Insertado.
+11>Insertado.
+12>
+--(7,z)
+-(1,n)
+--(4,l)
+(3,k)
+13>No AVL.
+14>Insertado.
+15>
+--(7,z)
+-(1,n)
+--(4,l)
+(3,k)
+-(2,a)
+16>AVL.
+17>Insertado.
+18>
+--(7,z)
+-(1,n)
+---(3,m)
+--(4,l)
+(3,k)
+-(2,a)
+19>No AVL.
+20>Fin.
