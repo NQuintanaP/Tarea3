@@ -49,7 +49,18 @@ bool insertar_en_binario(info_t i, binario_t &b) {
   asignada al nodo, pero no la del elemento).
   Precondición: ! es_vacio_binario(b).
  */
-info_t remover_mayor(binario_t &b);
+info_t remover_mayor(binario_t &b) {
+  info_t res;
+  if (b->der == NULL) {
+    res = b->dato;
+    binario_t izq = b->izq;
+    delete (b);
+    b = izq;
+  } else {
+    res = remover_mayor(b->der);
+  }
+  return res;
+}
 
 /*
   Remueve de `b' el nodo en el que el dato de texto de su elemento es `t'.
@@ -87,19 +98,25 @@ bool es_AVL(binario_t b);
   Devuelve el elemento asociado a la raíz de `b'.
   Precondición: ! es_vacio_binario(b).
  */
-info_t raiz(binario_t b);
+info_t raiz(binario_t b) {
+  return b->dato;
+}
 
 /*
   Devuelve el subárbol izquierdo de  `b'.
   Precondición: ! es_vacio_binario(b).
  */
-binario_t izquierdo(binario_t b);
+binario_t izquierdo(binario_t b) {
+  return b->izq;
+}
 
 /*
   Devuelve el subárbol derecho de  `b'.
   Precondición: ! es_vacio_binario(b).
  */
-binario_t derecho(binario_t b);
+binario_t derecho(binario_t b) {
+  return b->der;
+}
 
 /*
   Devuelve el subárbol que tiene como raíz al nodo con el elemento cuyo dato de
@@ -115,8 +132,8 @@ binario_t buscar_subarbol(const char *t, binario_t b);
 nat altura_binario(binario_t b) {
   if (es_vacio_binario(b))
     return 0;
-  else 
-    return 1 + max(altura_binario(b->izq),altura_binario(b->der));
+  else
+    return 1 + max(altura_binario(izquiero(b)),altura_binario(derecho(b)));
 }
 
 /*  Devuelve la cantidad de elementos de `b'. */
