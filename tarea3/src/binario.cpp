@@ -78,6 +78,22 @@ bool insertar_en_binario(info_t i, binario_t &b) {
   }
 }
 
+bool insertar_en_binario_ordNum(info_t i, binario_t &b) {
+  if (es_vacio_binario(b)) {
+    b->dato = i;
+    b->izq = NULL;
+    b->der = NULL;
+    return true;
+  } else {
+    if (numero_info(i) < numero_info(b->dato)){
+      return insertar_en_binario_ordNum(i,b->izq);
+    } else if (numero_info(i) > numero_info(b->dato))
+      return insertar_en_binario_ordNum(i,b->der);
+    else
+      return false;
+  }
+}
+
 /* Destructoras */
 
 /*
@@ -151,6 +167,24 @@ bool es_vacio_binario(binario_t b) {
   return b == NULL;
 }
 
+/* Retorna 1 si y solo si la altura por derecha y por izquierda son iguales */
+int comparar_niveles(binario_t b, int i){
+  int derecha = 0;
+  int izquierda = 0;
+  if (es_vacio_binario(b->izq)){
+    derecha = derecha + comparar_niveles(b->der,derecha);
+  } else if (es_vacio_binario(b->der)) {
+    izquierda = izquierda + comparar_niveles(b->izq,izquierda);
+  } else {
+    derecha = derecha + comparar_niveles(b->der,derecha);
+    izquierda = izquierda + comparar_niveles(b->izq,izquierda);
+  }
+  if (-1 < abs(derecha-izquierda) && abs(derecha-izquierda) < 1)
+    return derecha;
+  else
+    return 1;
+}
+
 /*
   Devuelve `true' si y sólo si cada nodo de `b' cumple la condición de balanceo
   AVL. El árbol vacío cumple la condición.
@@ -158,7 +192,16 @@ bool es_vacio_binario(binario_t b) {
   diferencia de las alturas de sus subárboles izquierdo y derecho en menor o
   igual a 1.
   Cada nodo se puede visitar una sola vez. */
-bool es_AVL(binario_t b);
+bool es_AVL(binario_t b) {
+  if (es_vacio_binario(b))
+    return true;
+  else {
+    if (es_vacio_binario(b->izq) && es_vacio_binario(b->der))
+      return true;
+    else
+      return comparar_niveles(b,0) == 1; /* si comparar_niveles == 1, entonces esta balanceado */
+  }
+}
 
 /* Selectoras */
 
@@ -191,7 +234,16 @@ binario_t derecho(binario_t b) {
   texto es `t'.
   Si `t' no pertenece a `b', devuelve el árbol vacío.
  */
-binario_t buscar_subarbol(const char *t, binario_t b);
+binario_t buscar_subarbol(const char *t, binario_t b) {
+  if (es_vacio_binario(b))
+    return NULL;
+  else if (orden_elemento(t,b) == 0)
+    return b;
+  else if (orden_elemento(t,b) < 1)
+    return buscar_subarbol(t,b->izq);
+  else
+    return buscar_subarbol(t,b->der);
+}
 
 /*
   Devuelve la altura de `b'.
@@ -205,7 +257,16 @@ nat altura_binario(binario_t b) {
 }
 
 /*  Devuelve la cantidad de elementos de `b'. */
-nat cantidad_binario(binario_t b);
+nat cantidad_binario(binario_t b) {
+  if (es_vacio_binario(b))
+    return 0;
+  else {
+    nat cantidad = 0;
+    cantidad = cantidad + cantidad_binario(b->izq);
+    cantidad = cantidad + cantidad_binario(b->der);
+    return cantidad + 1;
+  }
+}
 
 /*
   Devuelve el elemento que, según la propiedad de orden de los árboles
@@ -214,7 +275,29 @@ nat cantidad_binario(binario_t b);
   No se deben visitar nuevos nodos después que se encontró el kesimo.
   Precondición: 1 <= k <= cantidad_binario(b).
  */
-info_t kesimo_en_binario(nat k, binario_t b);
+info_t kesimo_en_binario(nat k, binario_t b) {
+  if (k == 1)
+    return b->dato;
+  else {
+    if (!es_vacio_binario(b)){
+      return kesimo_en_binario(k,b->izq);
+      k = k-1;
+    } else if (!es_vacio_binario(b))
+      return kesimo_en_binario(k-1,b);
+    else
+      return b->dato;
+  }
+}
+
+void insercion_linealizada(binario_t b, cadena_t &cad){
+  if (!es_vacio_binario(b)) {
+    if (!es_vacio_binario(b->izq)) {
+      insercion_linealizada(b->izq,cad);
+      insertar_al_final(copia_info(b->dato),cad);
+      insercion_linealizada(b->der,cad);
+    }
+  }
+}
 
 /*
   Devuelve una cadena_t con los elementos de `b' en orden lexicográfico
@@ -222,7 +305,11 @@ info_t kesimo_en_binario(nat k, binario_t b);
   según sus datos de texto.
   La cadena_t devuelta no comparte memoria con `b'.
  */
-cadena_t linealizacion(binario_t b);
+cadena_t linealizacion(binario_t b){
+  cadena_t res = crear_cadena();
+  insercion_linealizada(b,res);
+  return res;
+}
 
 /*
   Devuelve un árbol con copias de los elementos de `b' que cumplen la condición
@@ -240,7 +327,9 @@ cadena_t linealizacion(binario_t b);
   (Ver ejemplos en LetraTarea3.pdf).
   El árbol resultado no comparte memoria con `b'. *)
  */
-binario_t filtrado(int clave, binario_t b);
+binario_t filtrado(int clave, binario_t b) {
+  
+}
 
 /* Salida */
 
