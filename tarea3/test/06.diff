@@ -1,14 +1,4 @@
-2,33c2
-< 2>Insertado.
-< 3>Insertado.
-< 4>Insertado.
-< 5>Insertado.
-< 6>
-< --(7,z)
-< -(1,n)
-< --(4,l)
-< (3,k)
-< 7>(3,k).
+12,33c12
 < 8>(4,l).
 < 9>(1,n).
 < 10>(7,z).
@@ -32,5 +22,5 @@
 < 21>(7,z).
 < 22>Fin.
 ---
-> 2>
+> 8>
 \ No hay ningún carácter de nueva línea al final del fichero

@@ -37,7 +37,7 @@ struct rep_binario {
 */
 int orden_elemento(const char *f, binario_t b){
   if (!es_vacio_binario(b))
-    return strcmp(frase_info(b->dato),f);
+    return strcmp(f,frase_info(b->dato));
   else
     return 0;
 }
@@ -56,12 +56,13 @@ int nivel_actual(binario_t b,info_t a_buscar){
     return 0;
   else {
     if (orden_elemento(frase_info(a_buscar),b) == 0)
-      return 1;
+      printf("h");// return 1;
     else if(orden_elemento(frase_info(a_buscar),b) > 0)
-      return 1+nivel_actual(b->der,a_buscar);
+      printf("x");// return 1+nivel_actual(b->der,a_buscar);
     else if (orden_elemento(frase_info(a_buscar),b) < 0)
-      return 1+nivel_actual(b->izq,a_buscar);
-    else return 0;
+      printf("z");// return 1+nivel_actual(b->izq,a_buscar);
+    // else return 0;
+    return 0;
   }
 }
 
@@ -93,8 +94,10 @@ binario_t crear_binario() { return NULL; }
   Devuelve `true' si se insertó `i', o `false' en otro caso.
  */
 bool insertar_en_binario(info_t i, binario_t &b) {
+  binario_t a_insertar = new rep_binario;
+  a_insertar->dato = i;
   if (es_vacio_binario(b)) {
-    b->dato = i;
+    b = a_insertar;
     b->izq = NULL;
     b->der = NULL;
     return true;
@@ -129,6 +132,19 @@ info_t remover_mayor(binario_t &b) {
   return res;
 }
 
+info_t remover_menor(binario_t &b) {
+  info_t res;
+  if (b->izq == NULL) {
+    res = b->dato;
+    binario_t der = b->der;
+    delete (b);
+    b = der;
+  } else {
+    res = remover_menor(b->izq);
+  }
+  return res;
+}
+
 /*
   Remueve de `b' el nodo en el que el dato de texto de su elemento es `t'.
   Si en ningún nodo se cumple esa condición no se hace nada.
@@ -139,28 +155,41 @@ info_t remover_mayor(binario_t &b) {
   Libera la memoria del nodo y del elemento.
  */
 bool remover_de_binario(const char *t, binario_t &b){
-  if (es_vacio_binario(b))
-    return false;
-  else {
-    if (orden_elemento(t,b) == 0){
-      if (es_vacio_binario(b->izq) && es_vacio_binario(b->der)){
-        delete b;
-        return true;
-      } else if (!es_vacio_binario(b->der) && es_vacio_binario(b->izq)) {
-        binario_t auxBin = b;
-        b = b->der;
-        delete auxBin;
-        return true;
-      } else {
+  if (es_vacio_binario(b)){ return false; }
+
+  else if (orden_elemento(t,b) == 0){
+    if (es_vacio_binario(b->izq) && es_vacio_binario(b->der)) {
+      delete (b);
+      b = NULL;
+      return true;
+    } else {
+      if (!es_vacio_binario(b->izq)) {
         b->dato = remover_mayor(b->izq);
         return true;
+      } else {
+        b->dato = remover_menor(b->der);
+        return true;
       }
-    } else if(orden_elemento(t,b) < 1)
-      return remover_de_binario(t,b->izq);
-    else
-      return remover_de_binario(t,b->der);
-  }
+    }
+  } else if (orden_elemento(t,b) < 1){ return remover_de_binario(t,b->izq); }
+
+  else { return remover_de_binario(t,b->der); }
 }
+  // else if (es_vacio_binario(b->izq) && es_vacio_binario(b->der) && orden_elemento(t,b) == 0){
+  //   delete b;
+  //   return true;
+  // } else if (!es_vacio_binario(b->izq) && orden_elemento(t,b) == 0) {
+  //   b->dato = remover_mayor(b->izq);
+  //   return true;
+  // } else if (!es_vacio_binario(b->der) && orden_elemento(t,b) == 0) {
+  //   b->dato = remover_menor(b->der);
+  //   return true;
+  // } else if (!es_vacio_binario(b->izq) && orden_elemento(t,b) < 1)
+  //   return remover_de_binario(t,b->izq);
+  // else if (!es_vacio_binario(b->der) && orden_elemento(t,b) > 1)
+  //   return remover_de_binario(t,b->der);
+  // else
+  //   return false;
 
 
 /* Libera la memoria asociada a `b' y todos sus elementos. */
@@ -370,19 +399,20 @@ binario_t filtrado(int clave, binario_t b) {
   Antes de terminar, se debe imprimir un fin de linea.
   Si es_vacio_binario(b) sólo se imprime el fin de línea.
  */
-void imprimir_binario(binario_t b) {
-  if (es_vacio_binario(b))
-    printf("\n");
-  else if(es_vacio_binario(b->izq) && es_vacio_binario(b->der)){
-    for (int i=0;i<nivel_actual(b,b->dato);i++){
-      printf("-");
-    }
-    printf("(%i,%s)\n",numero_info(b->dato),frase_info(b->dato));
-  } else if(!es_vacio_binario(b->der) || !es_vacio_binario(b->izq)) {
-    if (!es_vacio_binario(b->der))
-      imprimir_binario(b->der);
-    imprimir_binario(b);
-    if (!es_vacio_binario(b->izq))
-      imprimir_binario(b->izq);
+
+void imprimir_guiones(binario_t b, int i){
+  if(!es_vacio_binario(b->der)){ imprimir_guiones(b->der,i+1); }
+  for (int j=i;j>0;j--){
+    printf("-");
   }
+  printf("(%i,%s)\n",numero_info(b->dato),frase_info(b->dato));
+  if(!es_vacio_binario(b->izq)){ imprimir_guiones(b->izq,i+1); }
+}
+
+void imprimir_binario(binario_t b) {
+  if (!es_vacio_binario(b)){
+    printf("\n");
+    imprimir_guiones(b,0);
+  }else
+    printf("\n");
 }
