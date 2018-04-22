@@ -28,6 +28,7 @@ struct rep_binario {
 /*
   Auxiliares
 */
+
 /*
   Devuelve 1 si la frase de i es menor que la del info_t de nodo
   Devuelve 0 si son iguales
@@ -35,7 +36,10 @@ struct rep_binario {
   Precondición: !es_vacio_binario
 */
 int orden_elemento(const char *f, binario_t b){
-  return strcmp(frase_info(b->dato),f);
+  if (!es_vacio_binario(b))
+    return strcmp(frase_info(b->dato),f);
+  else
+    return 0;
 }
 /* Devuelve el maximo de dos integers */
 nat max(int i, int j){
@@ -43,6 +47,32 @@ nat max(int i, int j){
     return j;
   else
     return i;
+}
+
+/* Calcula el nivel en el que se encuentra el nodo dado como parametro */
+
+int nivel_actual(binario_t b,info_t a_buscar){
+  if(es_vacio_binario(b))
+    return 0;
+  else {
+    if (orden_elemento(frase_info(a_buscar),b) == 0)
+      return 1;
+    else if(orden_elemento(frase_info(a_buscar),b) > 0)
+      return 1+nivel_actual(b->der,a_buscar);
+    else if (orden_elemento(frase_info(a_buscar),b) < 0)
+      return 1+nivel_actual(b->izq,a_buscar);
+    else return 0;
+  }
+}
+
+/* Dado un subarbol, busca el elemento de mayor orden segun su caracter */
+info_t maximo_caracter(binario_t b){
+    if (!es_vacio_binario(b->der))
+      return maximo_caracter(b->der);
+    else if (!es_vacio_binario(b->izq))
+      return maximo_caracter(b->izq);
+    else
+      return copia_info(b->dato);
 }
 
 // /* Devuelve True si el elemento es la raiz */
@@ -73,22 +103,6 @@ bool insertar_en_binario(info_t i, binario_t &b) {
       return insertar_en_binario(i,b->izq);
     else if (orden_elemento(frase_info(i),b) > 0)
       return insertar_en_binario(i,b->der);
-    else
-      return false;
-  }
-}
-
-bool insertar_en_binario_ordNum(info_t i, binario_t &b) {
-  if (es_vacio_binario(b)) {
-    b->dato = i;
-    b->izq = NULL;
-    b->der = NULL;
-    return true;
-  } else {
-    if (numero_info(i) < numero_info(b->dato)){
-      return insertar_en_binario_ordNum(i,b->izq);
-    } else if (numero_info(i) > numero_info(b->dato))
-      return insertar_en_binario_ordNum(i,b->der);
     else
       return false;
   }
@@ -328,7 +342,21 @@ cadena_t linealizacion(binario_t b){
   El árbol resultado no comparte memoria con `b'. *)
  */
 binario_t filtrado(int clave, binario_t b) {
-  
+  if (es_vacio_binario(b))
+    return NULL;
+  else {
+    binario_t res = crear_binario();
+    if (numero_info(b->dato) < clave) {
+      insertar_en_binario(copia_info(b->dato),res);
+      res->izq = filtrado(clave,b->izq);
+      res->der = filtrado(clave,b->der);
+      return res;
+    } else if (!es_vacio_binario(b->izq))
+      return filtrado(clave,b->izq);
+    else if (!es_vacio_binario(b->der))
+      return filtrado(clave,b->der);
+    return res;
+  }
 }
 
 /* Salida */
@@ -342,4 +370,19 @@ binario_t filtrado(int clave, binario_t b) {
   Antes de terminar, se debe imprimir un fin de linea.
   Si es_vacio_binario(b) sólo se imprime el fin de línea.
  */
-void imprimir_binario(binario_t b);
+void imprimir_binario(binario_t b) {
+  if (es_vacio_binario(b))
+    printf("\n");
+  else if(es_vacio_binario(b->izq) && es_vacio_binario(b->der)){
+    for (int i=0;i<nivel_actual(b,b->dato);i++){
+      printf("-");
+    }
+    printf("(%i,%s)\n",numero_info(b->dato),frase_info(b->dato));
+  } else if(!es_vacio_binario(b->der) || !es_vacio_binario(b->izq)) {
+    if (!es_vacio_binario(b->der))
+      imprimir_binario(b->der);
+    imprimir_binario(b);
+    if (!es_vacio_binario(b->izq))
+      imprimir_binario(b->izq);
+  }
+}
