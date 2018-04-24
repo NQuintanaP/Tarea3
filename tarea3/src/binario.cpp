@@ -22,6 +22,7 @@ struct rep_binario {
   info_t dato;
   rep_binario *izq;
   rep_binario *der;
+  bool filtrar;
 };
 
 
@@ -83,6 +84,7 @@ bool insertar_en_binario(info_t i, binario_t &b) {
     b = a_insertar;
     b->izq = NULL;
     b->der = NULL;
+    b->filtrar = true;
     return true;
   } else {
     if (orden_elemento(frase_info(i),b) < 0){
@@ -210,11 +212,16 @@ int recorrido_der(binario_t b){
 }
 
 /* Retorna 0 si y solo si la altura por derecha y por izquierda NO son iguales */
-bool nivel(binario_t b){
-  if (!es_vacio_binario(b->izq) || !es_vacio_binario(b->der))
-    return (abs(recorrido_izq(b->izq) - recorrido_der(b->der)) <= 1);
-  else
-    return false;
+int nivel(binario_t b){
+  if (es_vacio_binario(b))
+    return 0;
+  else {
+    int izquierda = 0;
+    int derecha = 0;
+    izquierda = recorrido_izq(b->izq);
+    derecha = recorrido_der(b->der);
+    return abs(izquierda - derecha);
+  }
 }
 
 /*
@@ -231,7 +238,7 @@ bool es_AVL(binario_t b) {
     if (es_vacio_binario(b->izq) && es_vacio_binario(b->der))
       return true;
     else {
-      return (nivel(b));
+      return (nivel(b) <= 1);
     }
   }
 }
@@ -349,19 +356,19 @@ cadena_t linealizacion(binario_t b){
   return res;
 }
 
-binario_t mayor(binario_t b, int clave){
-  binario_t aux;
-  binario_t res = crear_binario();
-  if (!es_vacio_binario(b->der))
-    aux = mayor(b->der,clave);
-  if (numero_info(aux->dato) < clave){
-    insertar_en_binario(copia_info(aux->dato),res);
-    return res;
-  } else {
-    if (!es_vacio_binario(b->izq))
-      aux = mayor(b->izq,clave);
+void mayor(binario_t b,int clave, binario_t &res,bool &insertar){
+  if (!es_vacio_binario(b)){
+    if (!es_vacio_binario(b->der))
+      mayor(b->der,clave,res,insertar);
+    if (numero_info(b->dato) < clave && insertar){
+      insertar_en_binario(copia_info(b->dato),res);
+      insertar = false;
+      b->filtrar = false;
+    }
+    else
+      if (!es_vacio_binario(b->izq) && insertar)
+        mayor(b->izq,clave,res,insertar);
   }
-  return aux;
 }
 
 /*
@@ -381,33 +388,106 @@ binario_t mayor(binario_t b, int clave){
   El árbol resultado no comparte memoria con `b'. *)
  */
 binario_t filtrado(int clave, binario_t b) {
-  if (es_vacio_binario(b)){
+  if (es_vacio_binario(b))
     return NULL;
-  } else {
+  else {
     binario_t res = crear_binario();
-    if (numero_info(b->dato) < clave){
+    if (numero_info(b->dato) < clave && b->filtrar){
       insertar_en_binario(copia_info(b->dato),res);
       res->izq = filtrado(clave,b->izq);
       res->der = filtrado(clave,b->der);
     } else {
-      if (!es_vacio_binario(b->izq)){
-        res = filtrado(clave,mayor(b->izq,clave));
-        res->izq = filtrado(clave,b->izq);
+      if (b->filtrar) {
+        bool x = true;
+        mayor(b->izq,clave,res,x);
+        if (es_vacio_binario(res)){
+          res = filtrado(clave,b->der);
+        } else {
+          res->izq = filtrado(clave,b->izq);
+          res->der = filtrado(clave,b->der);
+        }
+      } else if (!b->filtrar){
+        res = filtrado(clave,b->izq);
       }
-      else if (!es_vacio_binario(b->der))
-        res = filtrado(clave,b->der);
-
-      // res = filtrado(clave,mayor(b->izq,clave));
-      // if (res == NULL)
-      //   res = filtrado(clave,b->der);
-      // else{
-      //   res->izq = filtrado(clave,b->izq);
-      //   res->der = filtrado(clave,b->der);
-      // }
     }
+    b->filtrar = true;
     return res;
   }
 }
+
+
+// bool x = true;
+//  if (es_vacio_binario(b)){
+//    return NULL;
+//  } else {
+//    binario_t res = crear_binario();
+//    if (numero_info(b->dato) < clave && b->filtrar) {
+//      insertar_en_binario(copia_info(b->dato),res);
+//      res->izq = filtrado(clave,b->izq);
+//      res->der = filtrado(clave,b->der);
+//      b->filtrar = false;
+//    } else if (b->filtrar){
+//      if (!es_vacio_binario(b->izq)) {
+//        mayor(b->izq,clave,res,x);
+//        if (!es_vacio_binario(res)){
+//          if (!son_iguales(res->dato,b->dato)){
+//            res->izq = filtrado(clave,b->izq);
+//            res->der = filtrado(clave,b->der);
+//          }
+//        } else if (es_vacio_binario(res)){
+//          res = filtrado(clave,b->izq);
+//          if (!es_vacio_binario(res)){
+//            res->izq = filtrado(clave,b->izq);
+//            res->der = filtrado(clave,b->der);
+//          }
+//          res = filtrado(clave,b->der);
+//        }
+//      } else if (!es_vacio_binario(b->der)){
+//        res = filtrado(clave,b->der);
+//      }
+//    } else if (!b->filtrar){
+//      if (es_vacio_binario(res)){
+//        if (!es_vacio_binario(b->izq)){
+//         res = filtrado(clave,b->izq);
+//         b->izq->filtrar = false;
+//         res->izq = filtrado(clave,b->izq);
+//         res->der = filtrado(clave,b->der);
+//        }
+//        else
+//         res = filtrado(clave,b->der);
+//      }
+//    }
+//    b->filtrar = true;
+//    return res;
+// }
+
+// binario_t res = crear_binario();
+//  if (numero_info(b->dato) < clave && b->filtrar){
+//    insertar_en_binario(copia_info(b->dato),res);
+//    res->izq = filtrado(clave,b->izq);
+//    res->der = filtrado(clave,b->der);
+//  } else {
+//    if (b->filtrar) {
+//      if (!es_vacio_binario(b->izq)){
+//       mayor(b->izq,clave,res,x);
+//       if (!es_vacio_binario(res)){
+//         res->izq = filtrado(clave,b->izq);
+//         res->der = filtrado(clave,b->der);
+//       } //else {
+//       //   res = filtrado(clave,b->izq);
+//       //   b->der = filtrado(clave,b->der);
+//       // }
+//     } else {
+//       res = filtrado(clave,b->der);
+//     }
+//   } else if (!b->filtrar) {
+//     res = filtrado(clave,b->izq);
+//     res->der = filtrado(clave,b->der);
+//   }
+// }
+// return res;
+
+
 
 /* Salida */
 
