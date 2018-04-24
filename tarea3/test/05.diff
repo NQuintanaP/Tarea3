@@ -1,31 +1,4 @@
-12,38c12
-< 9>AVL.
-< 10>Insertado.
-< 11>Insertado.
-< 12>
-< --(7,z)
-< -(1,n)
-< --(4,l)
-< (3,k)
-< 13>No AVL.
-< 14>Insertado.
-< 15>
-< --(7,z)
-< -(1,n)
-< --(4,l)
-< (3,k)
-< -(2,a)
-< 16>AVL.
-< 17>Insertado.
-< 18>
-< --(7,z)
-< -(1,n)
-< ---(3,m)
-< --(4,l)
-< (3,k)
-< -(2,a)
+37c37
 < 19>No AVL.
-< 20>Fin.
 ---
-> 9>
-\ No hay ningún carácter de nueva línea al final del fichero
+> 19>AVL.

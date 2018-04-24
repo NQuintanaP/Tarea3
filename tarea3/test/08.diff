@@ -1,132 +1,17 @@
-23c23
-< 22>(12,m)
----
-> 22>
 81,82c81,82
 < -(10,i)
 < (6,e)
 ---
 > (10,i)
 > -(6,e)
-89,206c89
-< 78>AVL.
-< 79>Insertado.
-< 80>No AVL.
-< 81>Insertado.
-< 82>AVL.
-< 83>Insertado.
-< 84>Insertado.
+96c96
 < 85>No AVL.
-< 86>Insertado.
-< 87>AVL.
-< 88>
-< --(16,r)
-< -(14,o)
-< (12,m)
-< --(8,g)
-< -(7,f)
-< --(5,d)
-< ---(3,b)
-< 89>#  Fin.
-< 90>#  raiz, izquierdo, derecho.
-< 91>(12,m)
-< 92>
-< -(8,g)
-< (7,f)
-< -(5,d)
-< --(3,b)
-< 93>
-< -(16,r)
-< (14,o)
-< 94>(16,r)
-< 95>(14,o)
-< 96>(12,m)
-< 97>
-< -(8,g)
-< (7,f)
-< -(5,d)
-< --(3,b)
-< 98>
-< 99>(12,m)
-< 100>(7,f)
-< 101>
-< (5,d)
-< -(3,b)
-< 102>
-< (8,g)
-< 103>Removido.
-< 104>Removido.
-< 105>(7,f)
-< 106>
-< 107>
-< (8,g)
-< 108>
-< -(8,g)
-< (7,f)
-< 109>#  Fin.
-< 110>#  buscar_subarbol, kesimo_en_binario, linealizacion.
-< 111>Estructuras reiniciadas.
-< 112>Insertado.
-< 113>(12,m)
-< 114>Insertado.
-< 115>(5,d)(12,m)
-< 116>Insertado.
-< 117>Insertado.
-< 118>Insertado.
-< 119>Insertado.
-< 120>sub es vacío.
-< 121>(5,d)
-< 122>(6,e)
-< 123>(10,i)
-< 124>(15,p)
-< 125>sub es vacío.
-< 126>(5,d).
-< 127>(6,e).
-< 128>(8,g).
-< 129>(10,i).
-< 130>(12,m).
-< 131>(15,p).
-< 132>(5,d)(6,e)(8,g)(10,i)(12,m)(15,p)
-< 133>
-< -(15,p)
-< (12,m)
-< ---(10,i)
-< --(8,g)
-< ---(6,e)
-< -(5,d)
-< 134>#  Fin.
-< 135>#  filtrado.
-< 136>Estructuras reiniciadas.
-< 137>Insertado.
-< 138>Insertado.
-< 139>Insertado.
-< 140>Insertado.
-< 141>Insertado.
-< 142>Insertado.
-< 143>Insertado.
-< 144>Insertado.
-< 145>Insertado.
-< 146>Insertado.
-< 147>Insertado.
-< 148>
-< -(4,m)
-< (1,e)
-< --(2,d)
-< -(4,c)
-< --(3,b)
-< 149>
-< --(6,p)
-< ---(4,m)
-< -(7,k)
-< --(8,i)
-< ---(8,h)
-< (5,g)
-< --(1,e)
-< ---(2,d)
-< -(4,c)
-< --(3,b)
-< ---(9,a)
-< 150>Fin.
 ---
-> 78>
-\ No hay ningún carácter de nueva línea al final del fichero
+> 85>AVL.
+189d188
+< -(4,m)
+191c190,191
+< --(2,d)
+---
+> --(1,e)
+> ---(2,d)

@@ -49,23 +49,6 @@ nat max(int i, int j){
     return i;
 }
 
-/* Calcula el nivel en el que se encuentra el nodo dado como parametro */
-
-int nivel_actual(binario_t b,info_t a_buscar){
-  if(es_vacio_binario(b))
-    return 0;
-  else {
-    if (orden_elemento(frase_info(a_buscar),b) == 0)
-      printf("h");// return 1;
-    else if(orden_elemento(frase_info(a_buscar),b) > 0)
-      printf("x");// return 1+nivel_actual(b->der,a_buscar);
-    else if (orden_elemento(frase_info(a_buscar),b) < 0)
-      printf("z");// return 1+nivel_actual(b->izq,a_buscar);
-    // else return 0;
-    return 0;
-  }
-}
-
 /* Dado un subarbol, busca el elemento de mayor orden segun su caracter */
 info_t maximo_caracter(binario_t b){
     if (!es_vacio_binario(b->der))
@@ -102,10 +85,12 @@ bool insertar_en_binario(info_t i, binario_t &b) {
     b->der = NULL;
     return true;
   } else {
-    if (orden_elemento(frase_info(i),b) < 0)
+    if (orden_elemento(frase_info(i),b) < 0){
       return insertar_en_binario(i,b->izq);
-    else if (orden_elemento(frase_info(i),b) > 0)
+    }
+    else if (orden_elemento(frase_info(i),b) > 0){
       return insertar_en_binario(i,b->der);
+    }
     else
       return false;
   }
@@ -210,22 +195,26 @@ bool es_vacio_binario(binario_t b) {
   return b == NULL;
 }
 
-/* Retorna 1 si y solo si la altura por derecha y por izquierda son iguales */
-int comparar_niveles(binario_t b, int i){
-  int derecha = 0;
-  int izquierda = 0;
-  if (es_vacio_binario(b->izq)){
-    derecha = derecha + comparar_niveles(b->der,derecha);
-  } else if (es_vacio_binario(b->der)) {
-    izquierda = izquierda + comparar_niveles(b->izq,izquierda);
-  } else {
-    derecha = derecha + comparar_niveles(b->der,derecha);
-    izquierda = izquierda + comparar_niveles(b->izq,izquierda);
+int recorrido_izq(binario_t b){
+  if (es_vacio_binario(b)) { return 0; }
+  else {
+    return (1+recorrido_izq(b->izq));
   }
-  if (-1 < abs(derecha-izquierda) && abs(derecha-izquierda) < 1)
-    return derecha;
+}
+
+int recorrido_der(binario_t b){
+  if (es_vacio_binario(b)) { return 0; }
+  else {
+    return (1+recorrido_der(b->der));
+  }
+}
+
+/* Retorna 0 si y solo si la altura por derecha y por izquierda NO son iguales */
+bool nivel(binario_t b){
+  if (!es_vacio_binario(b->izq) || !es_vacio_binario(b->der))
+    return (abs(recorrido_izq(b->izq) - recorrido_der(b->der)) <= 1);
   else
-    return 1;
+    return false;
 }
 
 /*
@@ -241,8 +230,9 @@ bool es_AVL(binario_t b) {
   else {
     if (es_vacio_binario(b->izq) && es_vacio_binario(b->der))
       return true;
-    else
-      return comparar_niveles(b,0) == 1; /* si comparar_niveles == 1, entonces esta balanceado */
+    else {
+      return (nivel(b));
+    }
   }
 }
 
@@ -311,6 +301,21 @@ nat cantidad_binario(binario_t b) {
   }
 }
 
+info_t buscar_kesimo(nat &k, binario_t b, bool &retornar){
+  info_t res;
+  if (!es_vacio_binario(b->izq))
+    res = buscar_kesimo(k,b->izq,retornar);
+  k = k-1;
+  if (k == 0 && retornar){
+    retornar = false;
+    res = b->dato;
+  }
+  else
+    if (!es_vacio_binario(b->der) && retornar)
+      res = buscar_kesimo(k,b->der,retornar);
+  return res;
+}
+
 /*
   Devuelve el elemento que, según la propiedad de orden de los árboles
   `binario_t', está en el k-ésimo lugar de `b'.
@@ -319,26 +324,16 @@ nat cantidad_binario(binario_t b) {
   Precondición: 1 <= k <= cantidad_binario(b).
  */
 info_t kesimo_en_binario(nat k, binario_t b) {
-  if (k == 1)
-    return b->dato;
-  else {
-    if (!es_vacio_binario(b)){
-      return kesimo_en_binario(k,b->izq);
-      k = k-1;
-    } else if (!es_vacio_binario(b))
-      return kesimo_en_binario(k-1,b);
-    else
-      return b->dato;
-  }
+  bool x = true;
+  return buscar_kesimo(k,b,x);
+
 }
 
 void insercion_linealizada(binario_t b, cadena_t &cad){
   if (!es_vacio_binario(b)) {
-    if (!es_vacio_binario(b->izq)) {
-      insercion_linealizada(b->izq,cad);
-      insertar_al_final(copia_info(b->dato),cad);
-      insercion_linealizada(b->der,cad);
-    }
+    insercion_linealizada(b->izq,cad);
+    insertar_al_final(b->dato,cad);
+    insercion_linealizada(b->der,cad);
   }
 }
 
@@ -352,6 +347,21 @@ cadena_t linealizacion(binario_t b){
   cadena_t res = crear_cadena();
   insercion_linealizada(b,res);
   return res;
+}
+
+binario_t mayor(binario_t b, int clave){
+  binario_t aux;
+  binario_t res = crear_binario();
+  if (!es_vacio_binario(b->der))
+    aux = mayor(b->der,clave);
+  if (numero_info(aux->dato) < clave){
+    insertar_en_binario(copia_info(aux->dato),res);
+    return res;
+  } else {
+    if (!es_vacio_binario(b->izq))
+      aux = mayor(b->izq,clave);
+  }
+  return aux;
 }
 
 /*
@@ -371,19 +381,30 @@ cadena_t linealizacion(binario_t b){
   El árbol resultado no comparte memoria con `b'. *)
  */
 binario_t filtrado(int clave, binario_t b) {
-  if (es_vacio_binario(b))
+  if (es_vacio_binario(b)){
     return NULL;
-  else {
+  } else {
     binario_t res = crear_binario();
-    if (numero_info(b->dato) < clave) {
+    if (numero_info(b->dato) < clave){
       insertar_en_binario(copia_info(b->dato),res);
       res->izq = filtrado(clave,b->izq);
       res->der = filtrado(clave,b->der);
-      return res;
-    } else if (!es_vacio_binario(b->izq))
-      return filtrado(clave,b->izq);
-    else if (!es_vacio_binario(b->der))
-      return filtrado(clave,b->der);
+    } else {
+      if (!es_vacio_binario(b->izq)){
+        res = filtrado(clave,mayor(b->izq,clave));
+        res->izq = filtrado(clave,b->izq);
+      }
+      else if (!es_vacio_binario(b->der))
+        res = filtrado(clave,b->der);
+
+      // res = filtrado(clave,mayor(b->izq,clave));
+      // if (res == NULL)
+      //   res = filtrado(clave,b->der);
+      // else{
+      //   res->izq = filtrado(clave,b->izq);
+      //   res->der = filtrado(clave,b->der);
+      // }
+    }
     return res;
   }
 }
@@ -401,12 +422,14 @@ binario_t filtrado(int clave, binario_t b) {
  */
 
 void imprimir_guiones(binario_t b, int i){
-  if(!es_vacio_binario(b->der)){ imprimir_guiones(b->der,i+1); }
-  for (int j=i;j>0;j--){
-    printf("-");
+  if (!es_vacio_binario(b)){
+    imprimir_guiones(b->der,i+1);
+    for (int j = 0; j < i; j++) {
+      printf("-");
+    }
+    printf("(%i,%s)\n",numero_info(b->dato),frase_info(b->dato));
+    imprimir_guiones(b->izq,i+1);
   }
-  printf("(%i,%s)\n",numero_info(b->dato),frase_info(b->dato));
-  if(!es_vacio_binario(b->izq)){ imprimir_guiones(b->izq,i+1); }
 }
 
 void imprimir_binario(binario_t b) {
